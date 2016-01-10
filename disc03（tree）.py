@@ -35,9 +35,6 @@ def square_tree(tree):
         root3 += root1 + root2
     return root3
 
-t2 = square_tree(t)
-
-print(t2)
 
 def height(tree):
     """return the height of a tree"""
