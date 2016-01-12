@@ -129,3 +129,61 @@ constraint是一个调度字典，也是约束对象本身。它回应两个接�
 	       """The constraint that a * b = c """
            return make_ternary_constraint(a,b,c,mul,truediv,truediv)
 
+一个常数也是一个约束器，但是它不发送任何的信息，因为它只包含一个单独的连接器（用来构造）
+
+	>>>def constant(connector,value):
+	       """The constraint that connector = value"""
+           constraint = {}
+           connector['set_val'](constraint,value)
+           return constraint
+
+这三个约束器足够去实现我们的温度转换网络结构。
+
+**表示连接器**。一个连接器用一个包含回应函数和本地状态的字典来表示。连接器必须追踪给它当前值的informant（提供它所参与的constraints的列表）。
+
+连接器的构造connector有本地函数来设置和去除值（回应约束器的信息）
+
+	>>>def connector(name = None):
+	       """A connector between constraints"""
+           informant = None
+           constraints = []
+           def set_value(source,value):
+               nonlocal informat
+               val = connector['val']
+               if val is None:
+                   informant,connector['val'] = source,value
+                   if name is not None:
+                       print(name,'=',value)
+                   inform_all_except(source,'new_val',constraints)
+               else:
+                   if val != value:
+                       print('Contradiction detected:',val,'vs',value)
+           def forget_value(source):
+               nonlocal informant
+               if informant == source:
+                   informant,connector['val'] = None,None
+                   if name is not None:
+                       print(name,'is forgotten')
+                   inform_all_except(source,'forget',constraints)
+           connector = {'val':None,
+                        'set_val':set_value,
+                        'forget':forget_value,
+                        'has_val':lambda:connector['value'] is not None,
+                        'connect':lambda source:constraints.append(source)}
+           return connector
+连接器是一个对应5个信息的派遣字典（通过使用约束器和连接器交流）。4个回复是函数，最后一个回复是值本身。
+
+当需要设置连接器的值时，本地函数set_value被调用。如果连接器现在还没有值，它将要设置它自己的值和记住informant（source约束器需要设置值）。然后连接器将会通知所有它参与的约束器，除了那个需要设置值的约束器。这是通过使用下面的迭代函数来实现的。
+
+	>>>def inform_all_except(source,message,constraints):
+	       """Inform all constraints of the message,except source"""
+           for c in constraints:
+               if c! = source:
+                   c[message]()
+
+如果一个连接器被要求去除它的值，它将会调用本地函数forget-value（它会首先确定这个请求来自和设置值是同一个约束器）。如果是，连接器通知他的约束器，这个值的丢失。
+
+has_val指示是否连接器有值。对这个信息的回应，会把source约束器增加到约束器列表。
+
+我们设计约束器程序的很多点子将会在面向对象编程中再次出现。约束器和连接器都是通过信息操作的抽象对象。当连接器的值被改变时，它通过一个信息来被改变。不仅仅是值被改变了，它还验证了信息和传递了它的效果。
+实际上，我们将会使用相似的字典结构（string键和函数值）来实现面向对象系统。
