@@ -21,10 +21,15 @@ def merge(lst1, lst2):
     """
     "*** YOUR CODE HERE ***"
     result = []
-    if lst1[0] > lst2[0]:
-        result.append(lst2[0]) + merge(lst1,lst2[1:])
+    if lst1 == [] or lst2 == []:
+        result = lst1 + lst2
+        return result
+    elif lst1[0] > lst2[0]:
+        result.append(lst2[0])
+        result +=  merge(lst1,lst2[1:])
     else:
-        result.append(lst1[0]) + merge(lst1[1:],lst2)
+        result.append(lst1[0])
+        result += merge(lst1[1:],lst2)
     return result
 
 # Q13
@@ -38,8 +43,35 @@ def mergesort(seq):
     >>> mergesort([1])   # sorting a one-element list
     [1]
     """
-    "*** YOUR CODE HERE ***"
-
+	"""不使用递归的算法：
+	依次用2个组成的段，遍历形成新的seq，再用4个组成的段遍历，以此类推，最后只有一个段"""
+    #首先遍历单个元素
+    length = len(seq)
+    if length == 0:
+        return []
+    
+    re = []
+    n = 0
+    while n < length:
+        if n + 1 == length:
+            re += merge([seq[n]],[])
+        else:
+            re += merge([seq[n]],[seq[n + 1]])
+        n += 2
+    seq = re
+    #再遍历2个和多个组成的一段元素
+    i = 2
+    while True:
+        re = []
+        n = 0
+        while n + 2 * i < length:
+            re += merge(seq[n:n + i],seq[n + i:n + 2 * i])
+            n += 2 * i
+        re += merge(seq[n:n + i],seq[n + i:])
+        seq = re
+        if i >= length:
+            return seq
+        i *= 2
 
 # Q14
 def coords(fn, seq, lower, upper):
@@ -50,7 +82,7 @@ def coords(fn, seq, lower, upper):
     [[-2, 4], [1, 1], [3, 9]]
     """ 
     "*** YOUR CODE HERE ***"
-    return ______
+    return [[x,fn(x)] for x in seq if fn(x) >= lower and fn(x) <= upper]
 
 
 # Q15
@@ -69,7 +101,7 @@ def deck(suits, numbers):
     []
     """
     "*** YOUR CODE HERE ***"
-    return ______
+    return [[x,y] for x in suits for y in numbers]
 
 
 ################
@@ -96,7 +128,13 @@ def counter(message):
     """
     word_list = message.split()
     "*** YOUR CODE HERE ***"
-
+    dic = {}
+    for i in word_list:
+        if i in dic:
+            dic[i] += 1
+        else:
+            dic[i] = 1
+    return dic
 
 # Q17
 def replace_all(d, x, y):
@@ -108,3 +146,6 @@ def replace_all(d, x, y):
     True
     """
     "*** YOUR CODE HERE ***"
+    for i in d:
+       if d[i] == x:
+           d[i] = y 
