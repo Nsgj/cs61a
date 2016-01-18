@@ -111,10 +111,12 @@ def count_change(amount, denominations):
     60
     """
     "*** YOUR CODE HERE ***"
+    if amount == 0:
+        return 1
+    if amount < 0:
+        return 0
     if denominations == 'empty':
         return 0
-    if not is_link(denominations) and amount > denominations:
-        return 1
-    with_f = count_change(amount,first(denominations))
+    with_f = count_change(amount - first(denominations),denominations)
     without_f = count_change(amount,rest(denominations))
     return with_f + without_f
