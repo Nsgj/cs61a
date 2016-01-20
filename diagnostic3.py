@@ -135,26 +135,35 @@ new = filter_link(lambda x : x % 2 == 0, r)
 print(first(new))
 print(rest(new) == 'empty')
 
-
+"""重点在，选择first为一个点，将后面的放到它的前面"""
 def reverse_iterative(s):
     """Return a reversed version of a linked list s.
 
-    >>> primes = link(2, link(3, link(5, link(7, empty))))
-    >>> reverse_iterative(primes)
-    (7, (5, (3, (2, None))))
     """
     "*** YOUR CODE HERE ***"
-    for i in s:
-        if i == empty:
-            pass
-        elif not is_link(i):
+    end = link(first(s))
+    done = rest(s)
+    while done != 'empty':
+        fir = first(done)
+        end = link(fir,end)
 
+        done = rest(done)
+
+    return end
+
+primes = link(2, link(3, link(5, link(7, empty))))
 
 def reverse_recursive(s):
-    """Return a reversed version of a linked list s.
 
-    >>> primes = link(2, link(3, link(5, link(7, empty))))
-    >>> reverse_recursive(primes)
-    (7, (5, (3, (2, None))))
-    """
-    "*** YOUR CODE HERE ***"
+    end = link(first(s))
+
+    def help(s):
+        nonlocal end
+        if s == 'empty':
+            return
+        end = link(first(s),end)
+        help(rest(s))
+    help(rest(s))
+    return end
+
+print(reverse_recursive(primes))
