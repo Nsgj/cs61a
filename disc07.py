@@ -40,5 +40,6 @@ in lst.
 >>> lst
 [1, 2, 4, 2, 1, 5, 5]
 """
-    while x > 0:
+    while x >= 0:
         lst.append(el)
+		x -= 1
